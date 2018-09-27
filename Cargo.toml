@@ -1,0 +1,9 @@
+[package]
+name = "klockan"
+version = "0.1.0"
+authors = ["Daniel Lublin <daniel@lublin.se>"]
+
+[dependencies]
+rppal = "0.8"
+chrono = "0.4"
+ctrlc = { version = "3.0", features = ["termination"] }
