@@ -98,7 +98,7 @@ fn main() {
         let h10 = if h >= 10 {
             h / 10
         } else {
-            SYMBOLS[Symbol::_Blank as usize]
+            Symbol::_Blank as u8
         };
         let segments = [
             SYMBOLS[h10 as usize],
