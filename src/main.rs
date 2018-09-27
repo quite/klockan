@@ -40,18 +40,18 @@ const SYMBOLS: [u8; 20] = [
     0x00, 0x40, // Blank, Dash
     0b00110000, 0b00000110
 ];
-
+// for indexing SYMBOLS
 pub enum Symbol {
-    _A = 0xa,
-    _B = 0xb,
-    _C = 0xc,
-    _D = 0xd,
-    _E = 0xe,
-    _F = 0xf,
-    _Blank = 0x10,
-    _Dash = 0x11,
-    _Left1 = 0x12,
-    _Right1 = 0x13,
+    _A = 10,
+    _B,
+    _C,
+    _D,
+    _E,
+    _F,
+    _Blank,
+    _Dash,
+    _Left1,
+    _Right1,
 }
 
 fn main() {
