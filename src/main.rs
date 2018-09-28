@@ -88,8 +88,9 @@ fn main() {
         let h = local.hour() as u8;
         let m = local.minute() as u8;
 
+        // a little brighter during daytime
         let b = if h >= 8 && h <= 17 {
-            15
+            6
         } else {
             0
         };

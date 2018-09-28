@@ -1,6 +1,10 @@
 
-On the Arch Linux ARM isntall on my rpi1, I get some tools, enable i2c and load
-up modules.
+![](/cycle.apng?raw=true)
+
+![](/wiring.jpg?raw=true)
+
+My rpi1 is running Arch Linux ARM. First get some tools, then enable i2c and
+load up modules.
 
     pacman -S i2c-tools lm_sensors
     printf "dtparam=i2c_arm=on\n" >>/boot/config.txt
