@@ -26,7 +26,7 @@ build:
                   chown -R '$(shell id -u):$(shell id -g)' target Cargo.lock; \
                   $$CC_DIR/arm-linux-gnueabihf-strip target/$(TARGET)/$(VARIANT)/klockan'
 
-DUT=toot-wired
+DUT=toot
 deploy:
 	rsync -aP target/$(TARGET)/$(VARIANT)/klockan  root@$(DUT):/usr/local/bin/
 	rsync -aP klockan.service                      root@$(DUT):/etc/systemd/system/
