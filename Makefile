@@ -30,3 +30,6 @@ DUT=toot
 deploy:
 	rsync -aP target/$(TARGET)/$(VARIANT)/klockan  root@$(DUT):/usr/local/bin/
 	rsync -aP klockan.service                      root@$(DUT):/etc/systemd/system/
+
+restart:
+	ssh root@$(DUT) systemctl restart klockan
