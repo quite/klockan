@@ -12,7 +12,6 @@ extern crate ctrlc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
-
 const I2CADDR: u8 = 0x70;
 
 const SYSTEMSET: u8 = 0x20;
@@ -38,7 +37,7 @@ const SYMBOLS: [u8; 20] = [
     0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, // 0..9
     0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71, /* a b C d E F */
     0x00, 0x40, // Blank, Dash
-    0b00110000, 0b00000110
+    0b00110000, 0b00000110,
 ];
 // for indexing SYMBOLS
 pub enum Symbol {
@@ -62,7 +61,8 @@ fn main() {
     let r = running.clone();
     ctrlc::set_handler(move || {
         r.store(false, Ordering::SeqCst);
-    }).expect("set_handler fail");
+    })
+    .expect("set_handler fail");
 
     let mut i2c = I2c::new().unwrap();
 
@@ -74,12 +74,18 @@ fn main() {
     // max out on startup!
     i2c.write(&[
         0x00, //addr
-        SYMBOLS[8 as usize], 0x00,
-        SYMBOLS[8 as usize], 0x00,
-        CENTER_COLON | LEFT_COLON_LOW | LEFT_COLON_HIGH | DECIMAL_POINT, 0x00,
-        SYMBOLS[8 as usize], 0x00,
-        SYMBOLS[8 as usize], 0x00,
-    ]).ok();
+        SYMBOLS[8 as usize],
+        0x00,
+        SYMBOLS[8 as usize],
+        0x00,
+        CENTER_COLON | LEFT_COLON_LOW | LEFT_COLON_HIGH | DECIMAL_POINT,
+        0x00,
+        SYMBOLS[8 as usize],
+        0x00,
+        SYMBOLS[8 as usize],
+        0x00,
+    ])
+    .ok();
     thread::sleep(Duration::from_millis(500));
 
     let mut colon = 0;
@@ -89,11 +95,7 @@ fn main() {
         let m = local.minute() as u8;
 
         // a little brighter during daytime
-        let b = if h >= 8 && h <= 17 {
-            6
-        } else {
-            0
-        };
+        let b = if h >= 8 && h <= 17 { 6 } else { 0 };
         i2c.write(&[DIGITALDIM | b as u8]).ok();
 
         let h10 = if h >= 10 {
@@ -110,12 +112,18 @@ fn main() {
         colon = colon ^ CENTER_COLON;
         i2c.write(&[
             0x00, //addr
-            segments[0], 0x00,
-            segments[1], 0x00,
-            colon, 0x00,
-            segments[2], 0x00,
-            segments[3], 0x00,
-        ]).ok();
+            segments[0],
+            0x00,
+            segments[1],
+            0x00,
+            colon,
+            0x00,
+            segments[2],
+            0x00,
+            segments[3],
+            0x00,
+        ])
+        .ok();
 
         thread::sleep(Duration::from_millis(1000));
     }
@@ -123,12 +131,9 @@ fn main() {
     // flatline on shutdown
     i2c.write(&[
         0x00, //addr
-        0b1000000, 0x00,
-        0b1000000, 0x00,
-        0, 0x00,
-        0b1000000, 0x00,
-        0b1000000, 0x00,
-    ]).ok();
+        0b1000000, 0x00, 0b1000000, 0x00, 0, 0x00, 0b1000000, 0x00, 0b1000000, 0x00,
+    ])
+    .ok();
     thread::sleep(Duration::from_millis(500));
 
     i2c.write(&[SYSTEMSET | SS_OSCILLATOR_OFF]).ok();
