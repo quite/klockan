@@ -50,6 +50,14 @@ pub enum Symbol {
     _Dash,
 }
 
+fn display(i2c: &mut I2c, first: u8, second: u8, dots: u8, third: u8, fourth: u8) -> () {
+    i2c.write(&[
+        0x00, //addr
+        first, 0x00, second, 0x00, dots, 0x00, third, 0x00, fourth, 0x00,
+    ])
+    .ok();
+}
+
 fn main() {
     let device_info = DeviceInfo::new().unwrap();
     println!("{}, {}", device_info.model(), device_info.soc());
@@ -69,20 +77,14 @@ fn main() {
     i2c.write(&[DISPLAYSET | DS_DISPLAY_ON | DS_BLINK_OFF]).ok();
 
     // max out on startup!
-    i2c.write(&[
-        0x00, //addr
+    display(
+        &mut i2c,
         SYMBOLS[8 as usize],
-        0x00,
         SYMBOLS[8 as usize],
-        0x00,
         CENTER_COLON | LEFT_COLON_LOW | LEFT_COLON_HIGH | DECIMAL_POINT,
-        0x00,
         SYMBOLS[8 as usize],
-        0x00,
         SYMBOLS[8 as usize],
-        0x00,
-    ])
-    .ok();
+    );
     thread::sleep(Duration::from_millis(500));
 
     let mut colon = 0;
@@ -100,37 +102,22 @@ fn main() {
         } else {
             Symbol::_Blank as u8
         };
-        let segments = [
+
+        colon = colon ^ CENTER_COLON;
+        display(
+            &mut i2c,
             SYMBOLS[h10 as usize],
             SYMBOLS[(h % 10) as usize],
+            colon,
             SYMBOLS[(m / 10) as usize],
             SYMBOLS[(m % 10) as usize],
-        ];
-        colon = colon ^ CENTER_COLON;
-        i2c.write(&[
-            0x00, //addr
-            segments[0],
-            0x00,
-            segments[1],
-            0x00,
-            colon,
-            0x00,
-            segments[2],
-            0x00,
-            segments[3],
-            0x00,
-        ])
-        .ok();
+        );
 
         thread::sleep(Duration::from_millis(1000));
     }
 
     // flatline on shutdown
-    i2c.write(&[
-        0x00, //addr
-        0b1000000, 0x00, 0b1000000, 0x00, 0, 0x00, 0b1000000, 0x00, 0b1000000, 0x00,
-    ])
-    .ok();
+    display(&mut i2c, 0b1000000, 0b1000000, 0, 0b1000000, 0b1000000);
     thread::sleep(Duration::from_millis(500));
 
     i2c.write(&[SYSTEMSET | SS_OSCILLATOR_OFF]).ok();
