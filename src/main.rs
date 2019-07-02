@@ -50,7 +50,7 @@ pub enum Symbol {
     _Dash,
 }
 
-fn display(i2c: &mut I2c, first: u8, second: u8, dots: u8, third: u8, fourth: u8) -> () {
+fn display(i2c: &mut I2c, first: u8, second: u8, dots: u8, third: u8, fourth: u8) {
     i2c.write(&[
         0x00, //addr
         first, 0x00, second, 0x00, dots, 0x00, third, 0x00, fourth, 0x00,
@@ -117,7 +117,7 @@ fn main() {
     }
 
     // flatline on shutdown
-    display(&mut i2c, 0b1000000, 0b1000000, 0, 0b1000000, 0b1000000);
+    display(&mut i2c, 0b100_0000, 0b100_0000, 0, 0b100_0000, 0b100_0000);
     thread::sleep(Duration::from_millis(500));
 
     i2c.write(&[SYSTEMSET | SS_OSCILLATOR_OFF]).ok();
