@@ -33,11 +33,10 @@ const LEFT_COLON_LOW: u8 = 0x04;
 const LEFT_COLON_HIGH: u8 = 0x08;
 const DECIMAL_POINT: u8 = 0x10;
 
-const SYMBOLS: [u8; 20] = [
+const SYMBOLS: [u8; 18] = [
     0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, // 0..9
     0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71, /* a b C d E F */
     0x00, 0x40, // Blank, Dash
-    0b00110000, 0b00000110,
 ];
 // for indexing SYMBOLS
 pub enum Symbol {
@@ -49,8 +48,6 @@ pub enum Symbol {
     _F,
     _Blank,
     _Dash,
-    _Left1,
-    _Right1,
 }
 
 fn main() {
