@@ -90,8 +90,11 @@ fn main() {
     let mut colon = 0;
     while running.load(Ordering::SeqCst) {
         let local = Local::now();
+        let mon = local.month() as u8;
+        let dom = local.day() as u8;
         let h = local.hour() as u8;
         let m = local.minute() as u8;
+        let s = local.second() as u8;
 
         // a little brighter during daytime
         let b = if h >= 8 && h <= 17 { 6 } else { 0 };
@@ -103,15 +106,26 @@ fn main() {
             Symbol::_Blank as u8
         };
 
-        colon = colon ^ CENTER_COLON;
-        display(
-            &mut i2c,
-            SYMBOLS[h10 as usize],
-            SYMBOLS[(h % 10) as usize],
-            colon,
-            SYMBOLS[(m / 10) as usize],
-            SYMBOLS[(m % 10) as usize],
-        );
+        colon ^= CENTER_COLON;
+        if s < 59 {
+            display(
+                &mut i2c,
+                SYMBOLS[h10 as usize],
+                SYMBOLS[(h % 10) as usize],
+                colon,
+                SYMBOLS[(m / 10) as usize],
+                SYMBOLS[(m % 10) as usize],
+            )
+        } else {
+            display(
+                &mut i2c,
+                SYMBOLS[(mon / 10) as usize],
+                SYMBOLS[(mon % 10) as usize],
+                colon,
+                SYMBOLS[(dom / 10) as usize],
+                SYMBOLS[(dom % 10) as usize],
+            )
+        }
 
         thread::sleep(Duration::from_millis(1000));
     }
