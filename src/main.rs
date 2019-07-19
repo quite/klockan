@@ -1,6 +1,9 @@
 use std::thread;
 use std::time::Duration;
 
+extern crate structopt;
+use structopt::StructOpt;
+
 extern crate chrono;
 use chrono::prelude::*;
 
@@ -58,7 +61,17 @@ fn display(i2c: &mut I2c, first: u8, second: u8, dots: u8, third: u8, fourth: u8
     .ok();
 }
 
+#[derive(StructOpt, Debug)]
+#[structopt(name = "klockan")]
+struct Options {
+    /// flash the colon every second
+    #[structopt(short = "f", long = "flash")]
+    flash: bool,
+}
+
 fn main() {
+    let options = Options::from_args();
+
     let device_info = DeviceInfo::new().unwrap();
     println!("{}, {}", device_info.model(), device_info.soc());
 
@@ -106,7 +119,9 @@ fn main() {
             Symbol::_Blank as u8
         };
 
-        colon ^= CENTER_COLON;
+        if options.flash {
+            colon ^= CENTER_COLON;
+        }
         if s < 59 {
             display(
                 &mut i2c,
