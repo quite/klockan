@@ -69,6 +69,15 @@ struct Options {
     flash: bool,
 }
 
+fn nth_digit(num: u32, nth: usize) -> u32 {
+    let digits: Vec<_> = num
+        .to_string()
+        .chars()
+        .map(|d| d.to_digit(10).unwrap())
+        .collect();
+    return digits.into_iter().nth(nth).unwrap();
+}
+
 fn main() {
     let options = Options::from_args();
 
@@ -103,6 +112,7 @@ fn main() {
     let mut colon = 0;
     while running.load(Ordering::SeqCst) {
         let local = Local::now();
+        let year = local.year() as u32;
         let mon = local.month() as u8;
         let dom = local.day() as u8;
         let h = local.hour() as u8;
@@ -122,24 +132,33 @@ fn main() {
         if options.flash {
             colon ^= CENTER_COLON;
         }
-        if s < 59 {
-            display(
+
+        match s {
+            0..=57 => display(
                 &mut i2c,
                 SYMBOLS[h10 as usize],
                 SYMBOLS[(h % 10) as usize],
                 colon,
                 SYMBOLS[(m / 10) as usize],
                 SYMBOLS[(m % 10) as usize],
-            )
-        } else {
-            display(
+            ),
+            58 => display(
+                &mut i2c,
+                SYMBOLS[nth_digit(year, 0) as usize],
+                SYMBOLS[nth_digit(year, 1) as usize],
+                colon,
+                SYMBOLS[nth_digit(year, 2) as usize],
+                SYMBOLS[nth_digit(year, 3) as usize],
+            ),
+            59 => display(
                 &mut i2c,
                 SYMBOLS[(mon / 10) as usize],
                 SYMBOLS[(mon % 10) as usize],
                 colon,
                 SYMBOLS[(dom / 10) as usize],
                 SYMBOLS[(dom % 10) as usize],
-            )
+            ),
+            _ => (),
         }
 
         thread::sleep(Duration::from_millis(1000));
