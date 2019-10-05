@@ -32,8 +32,8 @@ const DS_BLINK_OFF: u8 = 0x00;
 const DIGITALDIM: u8 = 0xe0;
 
 const CENTER_COLON: u8 = 0x02;
-const LEFT_COLON_LOW: u8 = 0x04;
-const LEFT_COLON_HIGH: u8 = 0x08;
+const LEFT_COLON_HIGH: u8 = 0x04;
+const LEFT_COLON_LOW: u8 = 0x08;
 const DECIMAL_POINT: u8 = 0x10;
 
 const SYMBOLS: [u8; 18] = [
@@ -146,7 +146,7 @@ fn main() {
                 &mut i2c,
                 SYMBOLS[nth_digit(year, 0) as usize],
                 SYMBOLS[nth_digit(year, 1) as usize],
-                0,
+                LEFT_COLON_LOW,
                 SYMBOLS[nth_digit(year, 2) as usize],
                 SYMBOLS[nth_digit(year, 3) as usize],
             ),
@@ -154,7 +154,7 @@ fn main() {
                 &mut i2c,
                 SYMBOLS[(mon / 10) as usize],
                 SYMBOLS[(mon % 10) as usize],
-                LEFT_COLON_HIGH | CENTER_COLON,
+                LEFT_COLON_LOW,
                 SYMBOLS[(dom / 10) as usize],
                 SYMBOLS[(dom % 10) as usize],
             ),
