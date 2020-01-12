@@ -115,12 +115,12 @@ fn main() {
         let year = local.year() as u32;
         let mon = local.month() as u8;
         let dom = local.day() as u8;
-        let h = local.hour() as u8;
-        let m = local.minute() as u8;
-        let s = local.second() as u8;
+        let hh = local.hour() as u8;
+        let mm = local.minute() as u8;
+        let ss = local.second() as u8;
 
         // a little brighter during daytime, and more so during brighter months
-        let b = if h >= 8 && h <= 17 {
+        let brightness = if hh >= 8 && hh <= 17 {
             if mon >= 3 || mon <= 10 {
                 6
             } else {
@@ -129,10 +129,10 @@ fn main() {
         } else {
             0
         };
-        i2c.write(&[DIGITALDIM | b as u8]).ok();
+        i2c.write(&[DIGITALDIM | brightness as u8]).ok();
 
-        let h10 = if h >= 10 {
-            h / 10
+        let h_ = if hh >= 10 {
+            hh / 10
         } else {
             Symbol::_Blank as u8
         };
@@ -141,14 +141,14 @@ fn main() {
             colon ^= CENTER_COLON;
         }
 
-        match s {
+        match ss {
             0..=57 => display(
                 &mut i2c,
-                SYMBOLS[h10 as usize],
-                SYMBOLS[(h % 10) as usize],
+                SYMBOLS[h_ as usize],
+                SYMBOLS[(hh % 10) as usize],
                 colon,
-                SYMBOLS[(m / 10) as usize],
-                SYMBOLS[(m % 10) as usize],
+                SYMBOLS[(mm / 10) as usize],
+                SYMBOLS[(mm % 10) as usize],
             ),
             58 => display(
                 &mut i2c,
