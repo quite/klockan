@@ -119,8 +119,16 @@ fn main() {
         let m = local.minute() as u8;
         let s = local.second() as u8;
 
-        // a little brighter during daytime
-        let b = if h >= 8 && h <= 17 { 6 } else { 0 };
+        // a little brighter during daytime, and more so during brighter months
+        let b = if h >= 8 && h <= 17 {
+            if mon >= 3 || mon <= 10 {
+                6
+            } else {
+                3
+            }
+        } else {
+            0
+        };
         i2c.write(&[DIGITALDIM | b as u8]).ok();
 
         let h10 = if h >= 10 {
