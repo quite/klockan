@@ -70,12 +70,13 @@ struct Options {
 }
 
 fn nth_digit(num: u32, nth: usize) -> u32 {
-    let digits: Vec<_> = num
-        .to_string()
+    num.to_string()
         .chars()
         .map(|d| d.to_digit(10).unwrap())
-        .collect();
-    return digits.into_iter().nth(nth).unwrap();
+        .collect::<Vec<_>>()
+        .into_iter()
+        .nth(nth)
+        .unwrap()
 }
 
 fn main() {
