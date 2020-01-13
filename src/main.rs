@@ -53,10 +53,10 @@ pub enum Symbol {
     _Dash,
 }
 
-fn display(i2c: &mut I2c, first: u8, second: u8, dots: u8, third: u8, fourth: u8) {
+fn display(i2c: &mut I2c, data: &[u8; 5]) {
     i2c.write(&[
         0x00, //addr
-        first, 0x00, second, 0x00, dots, 0x00, third, 0x00, fourth, 0x00,
+        data[0], 0x00, data[1], 0x00, data[2], 0x00, data[3], 0x00, data[4], 0x00,
     ])
     .ok();
 }
@@ -92,22 +92,22 @@ fn main() {
     })
     .expect("set_handler fail");
 
+    let mut data: [u8; 5];
     let mut i2c = I2c::new().unwrap();
-
     i2c.set_slave_address(I2CADDR as u16).ok();
     i2c.write(&[SYSTEMSET | SS_OSCILLATOR_ON]).ok();
-
     i2c.write(&[DISPLAYSET | DS_DISPLAY_ON | DS_BLINK_OFF]).ok();
 
     // max out on startup!
-    display(
-        &mut i2c,
+    data = [
         SYMBOLS[8 as usize],
         SYMBOLS[8 as usize],
         CENTER_COLON | LEFT_COLON_LOW | LEFT_COLON_HIGH | DECIMAL_POINT,
         SYMBOLS[8 as usize],
         SYMBOLS[8 as usize],
-    );
+    ];
+    display(&mut i2c, &data);
+
     thread::sleep(Duration::from_millis(500));
 
     let mut colon = 0;
@@ -143,30 +143,36 @@ fn main() {
         }
 
         match ss {
-            0..=57 => display(
-                &mut i2c,
-                SYMBOLS[h_ as usize],
-                SYMBOLS[(hh % 10) as usize],
-                colon,
-                SYMBOLS[(mm / 10) as usize],
-                SYMBOLS[(mm % 10) as usize],
-            ),
-            58 => display(
-                &mut i2c,
-                SYMBOLS[nth_digit(year, 0) as usize],
-                SYMBOLS[nth_digit(year, 1) as usize],
-                LEFT_COLON_LOW,
-                SYMBOLS[nth_digit(year, 2) as usize],
-                SYMBOLS[nth_digit(year, 3) as usize],
-            ),
-            59 => display(
-                &mut i2c,
-                SYMBOLS[(mon / 10) as usize],
-                SYMBOLS[(mon % 10) as usize],
-                LEFT_COLON_LOW,
-                SYMBOLS[(dom / 10) as usize],
-                SYMBOLS[(dom % 10) as usize],
-            ),
+            0..=57 => {
+                data = [
+                    SYMBOLS[h_ as usize],
+                    SYMBOLS[(hh % 10) as usize],
+                    colon,
+                    SYMBOLS[(mm / 10) as usize],
+                    SYMBOLS[(mm % 10) as usize],
+                ];
+                display(&mut i2c, &data)
+            }
+            58 => {
+                data = [
+                    SYMBOLS[nth_digit(year, 0) as usize],
+                    SYMBOLS[nth_digit(year, 1) as usize],
+                    LEFT_COLON_LOW,
+                    SYMBOLS[nth_digit(year, 2) as usize],
+                    SYMBOLS[nth_digit(year, 3) as usize],
+                ];
+                display(&mut i2c, &data)
+            }
+            59 => {
+                data = [
+                    SYMBOLS[(mon / 10) as usize],
+                    SYMBOLS[(mon % 10) as usize],
+                    LEFT_COLON_LOW,
+                    SYMBOLS[(dom / 10) as usize],
+                    SYMBOLS[(dom % 10) as usize],
+                ];
+                display(&mut i2c, &data)
+            }
             _ => (),
         }
 
@@ -174,7 +180,9 @@ fn main() {
     }
 
     // flatline on shutdown
-    display(&mut i2c, 0b100_0000, 0b100_0000, 0, 0b100_0000, 0b100_0000);
+    data = [0b100_0000, 0b100_0000, 0, 0b100_0000, 0b100_0000];
+    display(&mut i2c, &data);
+
     thread::sleep(Duration::from_millis(500));
 
     i2c.write(&[SYSTEMSET | SS_OSCILLATOR_OFF]).ok();
