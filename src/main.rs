@@ -120,16 +120,18 @@ fn main() {
         let mm = local.minute() as u8;
         let ss = local.second() as u8;
 
-        // a little brighter during daytime, and more so during brighter months
-        let brightness = if hh >= 8 && hh <= 17 {
-            if mon >= 3 || mon <= 10 {
-                6
-            } else {
-                3
-            }
-        } else {
-            0
-        };
+        // clock is now located in a darker room...
+        let brightness = 0;
+        // // a little brighter during daytime, and more so during brighter months
+        // let brightness = if hh >= 8 && hh <= 17 {
+        //     if mon >= 3 || mon <= 10 {
+        //         6
+        //     } else {
+        //         3
+        //     }
+        // } else {
+        //     0
+        // };
         i2c.write(&[DIGITALDIM | brightness as u8]).ok();
 
         let h_ = if hh >= 10 {
