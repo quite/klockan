@@ -143,23 +143,13 @@ fn main() {
         }
 
         match ss {
-            0..=57 => {
+            0..=58 => {
                 data = [
                     SYMBOLS[h_ as usize],
                     SYMBOLS[(hh % 10) as usize],
                     colon,
                     SYMBOLS[(mm / 10) as usize],
                     SYMBOLS[(mm % 10) as usize],
-                ];
-                display(&mut i2c, &data)
-            }
-            58 => {
-                data = [
-                    SYMBOLS[nth_digit(year, 0) as usize],
-                    SYMBOLS[nth_digit(year, 1) as usize],
-                    LEFT_COLON_LOW,
-                    SYMBOLS[nth_digit(year, 2) as usize],
-                    SYMBOLS[nth_digit(year, 3) as usize],
                 ];
                 display(&mut i2c, &data)
             }
