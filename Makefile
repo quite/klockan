@@ -17,7 +17,7 @@
 
 TARGET=arm-unknown-linux-gnueabihf
 VARIANT = release
-build:
+build-target:
 	docker run -it --rm -v $$(pwd):/source \
          -v ~/.cargo/git:/root/.cargo/git \
          -v ~/.cargo/registry:/root/.cargo/registry \
@@ -26,7 +26,11 @@ build:
                   chown -R '$(shell id -u):$(shell id -g)' target Cargo.lock; \
                   $$CC_DIR/arm-linux-gnueabihf-strip target/$(TARGET)/$(VARIANT)/klockan'
 
-DUT=toot
+build:
+	cargo build
+
+#DUT=toot
+DUT=192.168.0.13
 deploy:
 	rsync -aP target/$(TARGET)/$(VARIANT)/klockan  root@$(DUT):/usr/local/bin/
 	rsync -aP klockan.service                      root@$(DUT):/etc/systemd/system/
